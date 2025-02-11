@@ -75,11 +75,20 @@ class RichEditorState extends State<RichEditor> {
 
   _loadHtmlFromAssets() async {
     final filePath = assetPath;
-    _controller!.loadUrl(
-      urlRequest: URLRequest(
-        url: Uri.tryParse('http://localhost:$port/$filePath'),
-      ),
-    );
+    final uri = Uri.tryParse('http://localhost:$port/$filePath');
+
+    if (uri != null) {
+      final webUri = WebUri(uri
+          .toString()); // Adjust this line based on how WebUri is constructed
+      _controller!.loadUrl(
+        urlRequest: URLRequest(
+          url: webUri,
+        ),
+      );
+    } else {
+      // Handle the error when the Uri is null
+      print('Invalid URI');
+    }
   }
 
   @override
@@ -101,8 +110,11 @@ class RichEditorState extends State<RichEditor> {
               } else {
                 await _controller!.loadUrl(
                   urlRequest: URLRequest(
-                    url: Uri.tryParse(
-                        'file:///android_asset/flutter_assets/$assetPath'),
+                    url: WebUri(
+                      Uri.tryParse(
+                              'file:///android_asset/flutter_assets/$assetPath')
+                          .toString(),
+                    ),
                   ),
                 );
               }
